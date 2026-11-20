@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>David Ray Portfolio</title>
+<meta name="description" content="David Ray, project engineer at C-DAC Guwahati. Spring Boot backends, high-performance computing training and AI programmes.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..900&display=swap" rel="stylesheet">
+<style>
+/* Layout idea: a dark scrolling page that alternates with light "sheets" whose rounded
+   tops slide over the section before. Giant wide headlines carry each section; three
+   scroll-driven moments (about text, credentials ring, stacking work cards) do the moving.
+   Single theme by choice. */
+:root {
+  color-scheme: dark;
+  --bg: #0a101c;
+  --fg: #dbe4ee;
+  --muted: #93a0b5;
+  --line: #27344d;
+  --paper: #f3f5f8;
+  --ink: #0a101c;
+  --teal: #5ee0d0;
+  --blue: #3f6df0;
+  --font: "Archivo", "Arial Black", "Helvetica Neue", Arial, sans-serif;
+  --gutter: clamp(18px, 4vw, 44px);
+  --sheet: clamp(32px, 5vw, 60px);
+}
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0; background: var(--bg); color: var(--fg);
+  font-family: var(--font); font-size: 1.0625rem; line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+h1, h2, h3, p, ul { margin: 0; padding: 0; }
+ul { list-style: none; }
+a { color: inherit; }
+:focus-visible { outline: 2px solid var(--teal); outline-offset: 3px; border-radius: 4px; }
+
+.display {
+  font-weight: 900; font-stretch: 125%; text-transform: uppercase;
+  line-height: 0.92; letter-spacing: -0.02em; text-wrap: balance;
+  background: linear-gradient(180deg, #f4f7fb 0%, #8795ad 100%);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.display.on-paper { background: none; color: var(--ink); }
+h2.display { font-size: clamp(2.6rem, 10.5vw, 9rem); text-align: center; }
+
+.pill {
+  display: inline-block; text-decoration: none; text-transform: uppercase;
+  font-weight: 700; font-stretch: 110%; font-size: 0.9rem; letter-spacing: 0.06em;
+  padding: 15px 30px; border-radius: 999px; color: #fff;
+  background: linear-gradient(115deg, var(--blue), #129c8f);
+  border: 2px solid #fff; transition: transform .2s ease, box-shadow .2s ease;
+}
+.pill:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(63,109,240,.45); }
+.ghost {
+  display: inline-block; text-decoration: none; text-transform: uppercase;
+  font-weight: 600; font-size: 0.8rem; letter-spacing: 0.08em;
+  padding: 10px 20px; border-radius: 999px; border: 1.5px solid var(--fg); color: var(--fg);
+}
+.ghost:hover { background: var(--fg); color: var(--ink); }
+
+/* Hero */
+.hero { min-height: 100vh; display: flex; flex-direction: column; padding: 0 var(--gutter) 48px; }
+.topbar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px 28px; padding-top: 28px; }
+.brand { font-weight: 800; font-stretch: 115%; text-transform: uppercase; text-decoration: none; letter-spacing: 0.02em; }
+.topbar ul { display: flex; flex-wrap: wrap; gap: 6px 34px; }
+.topbar ul a { text-decoration: none; text-transform: uppercase; font-weight: 600; letter-spacing: 0.04em; }
+.topbar ul a:hover { color: var(--teal); }
+.hero h1 { font-size: clamp(3rem, 13.4vw, 13.5rem); margin-top: clamp(24px, 4vw, 48px); }
+.hero h1 span { display: block; }
+.hero-intro { max-width: 30em; margin-top: clamp(24px, 4vw, 44px); text-transform: uppercase; font-size: 0.95rem; letter-spacing: 0.03em; line-height: 1.6; }
+.stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px clamp(20px, 4vw, 56px); margin-top: clamp(28px, 4vw, 44px); }
+.stats li { border-left: 1px solid var(--line); padding-left: 16px; }
+.stats b { display: block; font-weight: 800; font-stretch: 115%; font-size: 1.5rem; }
+.stats span { color: var(--muted); text-transform: uppercase; font-size: 0.78rem; letter-spacing: 0.06em; }
+.hero-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 16px 28px; margin-top: 40px; }
+.textlink { text-transform: uppercase; font-weight: 600; font-size: 0.85rem; letter-spacing: 0.08em; text-decoration: none; border-bottom: 1px solid currentColor; padding-bottom: 2px; }
+.textlink:hover { color: var(--teal); }
+
+/* Marquee */
+.marquee { border-block: 1px solid var(--line); padding-block: clamp(36px, 6vw, 80px); overflow: hidden; display: grid; gap: clamp(16px, 3vw, 40px); }
+.track { display: flex; width: max-content; will-change: transform; }
+.track span {
+  font-weight: 900; font-stretch: 125%; text-transform: uppercase; white-space: nowrap;
+  font-size: clamp(2.6rem, 8.5vw, 7.5rem); line-height: 1; padding-right: 0.35em;
+}
+.track.outline span { color: transparent; -webkit-text-stroke: 1.5px var(--fg); }
+.track.solid span { color: var(--fg); }
+
+/* About (pinned, words light up with scroll) */
+.about { height: 250vh; position: relative; }
+.about-pin { position: sticky; top: 0; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: clamp(28px, 5vh, 60px); padding: 0 var(--gutter) var(--sheet); text-align: center; }
+.about-text { max-width: 30em; font-size: clamp(1.1rem, 2vw, 1.5rem); font-weight: 600; line-height: 1.5; }
+.about-text span { opacity: 0.28; transition: opacity .25s ease; }
+.about-text span.lit { opacity: 1; }
+
+/* Sheets */
+.sheet { position: relative; z-index: 2; border-radius: var(--sheet) var(--sheet) 0 0; margin-top: calc(var(--sheet) * -1); padding: clamp(72px, 10vw, 128px) var(--gutter) calc(clamp(72px, 10vw, 128px) + var(--sheet)); }
+.sheet.paper { background: var(--paper); color: var(--ink); }
+.sheet.dark { background: var(--bg); color: var(--fg); }
+.inner { max-width: 1040px; margin: clamp(40px, 7vw, 96px) auto 0; }
+
+.caps li { display: grid; grid-template-columns: minmax(0, auto) minmax(0, 1fr); gap: 8px clamp(20px, 4vw, 48px); align-items: center; padding-block: clamp(22px, 3.5vw, 40px); border-bottom: 1px solid #cfd5de; }
+.caps li:last-child { border-bottom: 0; }
+.caps .num { font-weight: 900; font-stretch: 125%; font-size: clamp(3rem, 9vw, 7rem); line-height: 0.9; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
+.caps h3 { font-weight: 800; font-stretch: 110%; text-transform: uppercase; font-size: clamp(1.1rem, 2vw, 1.5rem); }
+.caps p { color: #4a5568; max-width: 40em; margin-top: 6px; }
+
+.jobs { display: grid; gap: clamp(20px, 3vw, 36px); max-width: 900px; }
+.job { border: 1px solid var(--line); border-radius: 30px; padding: clamp(24px, 4vw, 40px); }
+.job-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; gap: 10px 20px; }
+.job h3 { font-weight: 800; font-stretch: 112%; font-size: 1.35rem; line-height: 1.2; }
+.org { color: var(--teal); font-weight: 600; margin-top: 2px; }
+.date { border: 1px solid var(--line); border-radius: 999px; padding: 6px 14px; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); white-space: nowrap; }
+.job ul { margin-top: 18px; display: grid; gap: 8px; color: #b7c2d3; max-width: 46em; }
+.job ul li { padding-left: 18px; position: relative; }
+.job ul li::before { content: ""; position: absolute; left: 0; top: 0.7em; width: 8px; height: 1.5px; background: var(--teal); }
+
+/* Credentials (pinned ring that opens into a reel) */
+.creds { position: relative; height: 520vh; }
+.stage { position: sticky; top: 0; height: 100vh; overflow: hidden; perspective: 1400px; }
+.cred {
+  position: absolute; left: 50%; top: 50%;
+  width: clamp(230px, 27vw, 400px); aspect-ratio: 1.45;
+  border-radius: 18px; padding: clamp(16px, 2vw, 26px);
+  display: flex; flex-direction: column; justify-content: space-between; gap: 10px;
+  background: linear-gradient(140deg, #16233c, #0f1829); border: 1px solid #3a4c6e;
+  box-shadow: 0 18px 50px rgba(0,0,0,.5); will-change: transform, opacity;
+}
+.cred:nth-child(2n) { background: linear-gradient(140deg, #f3f5f8, #d9e0ea); color: var(--ink); border-color: #fff; }
+.cred .kind { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.12em; font-weight: 700; color: var(--teal); }
+.cred:nth-child(2n) .kind { color: #1d4ed8; }
+.cred .name { font-weight: 800; font-stretch: 112%; font-size: clamp(1rem, 1.7vw, 1.45rem); line-height: 1.15; }
+.cred .meta { font-size: 0.85rem; opacity: 0.8; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 12px; }
+.cred a { font-weight: 700; }
+.creds-centre, .creds-title { position: absolute; margin: 0; font-weight: 700; font-stretch: 112%; }
+.creds-centre { left: 50%; top: 50%; transform: translate(-50%, -50%); text-transform: uppercase; font-size: clamp(1.1rem, 2.4vw, 1.9rem); letter-spacing: 0.02em; }
+.creds-title { left: var(--gutter); top: 50%; transform: translateY(-50%); width: min(22vw, 300px); font-size: clamp(1.2rem, 2.4vw, 2rem); line-height: 1.2; }
+.creds-index { position: absolute; right: var(--gutter); top: 50%; transform: translateY(-50%); text-align: right; display: grid; gap: 6px; font-size: 0.78rem; color: var(--muted); max-width: 22vw; }
+.creds-index li.on { color: #fff; font-weight: 700; }
+
+/* Selected work (stacking cards) */
+.work { padding: clamp(72px, 10vw, 128px) var(--gutter) calc(clamp(72px, 10vw, 128px) + var(--sheet)); }
+.stack { max-width: 1040px; margin: clamp(40px, 7vw, 96px) auto 0; }
+.card {
+  position: sticky; top: calc(28px + var(--i) * 26px);
+  min-height: min(520px, 72vh); margin-bottom: 44px;
+  background: var(--bg); border: 1.5px solid var(--fg); border-radius: clamp(28px, 4vw, 48px);
+  padding: clamp(24px, 4vw, 44px); display: flex; flex-direction: column; gap: 14px;
+  box-shadow: 0 -14px 40px rgba(0,0,0,.55);
+}
+.card-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; gap: 12px 20px; }
+.card h3 { font-weight: 900; font-stretch: 120%; text-transform: uppercase; font-size: clamp(1.5rem, 4vw, 2.9rem); line-height: 1; letter-spacing: -0.01em; }
+.cat { color: var(--muted); text-transform: uppercase; font-size: 0.78rem; letter-spacing: 0.1em; font-weight: 600; margin-top: 10px; }
+.card p.desc { margin-top: auto; max-width: 34em; font-size: clamp(1.05rem, 1.7vw, 1.3rem); line-height: 1.4; }
+.tags { display: flex; flex-wrap: wrap; gap: 8px; }
+.tags li { border: 1px solid var(--line); border-radius: 999px; padding: 6px 14px; font-size: 0.8rem; font-weight: 600; }
+
+/* Education and skills */
+.edu-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.tile { background: #e6eaf0; border: 1px solid #d3dae4; border-radius: 16px; padding: 20px 22px; }
+.tile h3 { font-weight: 800; font-stretch: 108%; font-size: 1.1rem; line-height: 1.25; }
+.tile p { color: #4a5568; margin-top: 4px; }
+.skills { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 28px; }
+.skills li { background: var(--ink); color: var(--paper); border-radius: 999px; padding: 8px 18px; font-weight: 600; font-size: 0.9rem; }
+
+/* Contact */
+.contact { min-height: 80vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 28px; }
+.contact h2 { font-size: clamp(2.4rem, 9vw, 8rem); }
+.contact p { max-width: 30em; font-size: 1.2rem; color: #b7c2d3; }
+.address { font-weight: 600; overflow-wrap: anywhere; }
+.social { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
+.footline { color: var(--muted); text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.12em; margin-top: 12px; }
+
+/* Toast */
+.toast {
+  position: fixed; right: 20px; bottom: 20px; z-index: 50; width: min(360px, calc(100vw - 40px));
+  background: linear-gradient(140deg, #141d30, #10263a); border: 1px solid var(--line); border-radius: 18px;
+  padding: 22px 44px 20px 22px; box-shadow: 0 20px 60px rgba(0,0,0,.6);
+  transform: translateY(20px); opacity: 0; visibility: hidden; transition: opacity .4s ease, transform .4s ease, visibility .4s;
+}
+.toast.show { transform: none; opacity: 1; visibility: visible; }
+.toast p { font-size: 0.95rem; }
+.toast .ghost { margin-top: 14px; background: var(--fg); color: var(--ink); padding: 8px 16px; font-size: 0.72rem; }
+.toast button { position: absolute; top: 10px; right: 12px; background: none; border: 0; color: var(--muted); font-size: 1.3rem; line-height: 1; cursor: pointer; padding: 4px 6px; }
+.toast button:hover { color: #fff; }
+
+@media (max-width: 760px) {
+  .stats, .edu-grid { grid-template-columns: minmax(0, 1fr); }
+  .creds-index { display: none; }
+  .creds-title { top: 9vh; left: var(--gutter); right: var(--gutter); width: auto; transform: none; text-align: center; }
+  .card { top: calc(16px + var(--i) * 14px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .pill, .about-text span, .toast { transition: none; }
+}
+</style>
+</head>
+<body>
+
+<section class="hero" id="top">
+  <nav class="topbar" aria-label="Sections">
+    <a class="brand" href="#top">David Ray</a>
+    <ul>
+      <li><a href="#about">About</a></li>
+      <li><a href="#work">Work</a></li>
+      <li><a href="#experience">Experience</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </nav>
+  <h1 class="display"><span>Backend.</span><span>HPC. AI.</span></h1>
+  <p class="hero-intro">A project engineer at C-DAC Guwahati who builds Spring Boot backends, leads training on high-performance computing machines, and delivers C-DAC's postgraduate programme in artificial intelligence.</p>
+  <ul class="stats">
+    <li><b>4+</b><span>Years as project engineer at C-DAC</span></li>
+    <li><b>5+</b><span>Years in engineering and technical training</span></li>
+    <li><b>6</b><span>Projects across backend, HPC and AI</span></li>
+  </ul>
+  <div class="hero-actions">
+    <a class="pill" href="#contact">Contact me</a>
+    <a class="textlink" href="#work">Explore my work</a>
+  </div>
+</section>
+
+<div class="marquee" aria-hidden="true">
+  <div class="track outline" data-dir="-1"></div>
+  <div class="track solid" data-dir="1"></div>
+</div>
+
+<section class="about" id="about">
+  <div class="about-pin">
+    <h2 class="display">About me</h2>
+    <p class="about-text" id="aboutText">I am David Ray, an engineer with a Master of Computer Applications and more than four years at the Centre for Development of Advanced Computing. I design secure, well-tested backend services, and I run national skilling programmes in AI, cybersecurity and supercomputing.</p>
+    <a class="pill" href="#contact">Contact me</a>
+  </div>
+</section>
+
+<section class="sheet paper">
+  <h2 class="display on-paper">What I do</h2>
+  <ul class="caps inner">
+    <li>
+      <span class="num">01</span>
+      <div><h3>Backend engineering</h3><p>Spring Boot services and REST APIs on PostgreSQL with Hibernate/JPA, JWT authentication, role-based access and asynchronous processing, tested with JUnit and Mockito.</p></div>
+    </li>
+    <li>
+      <span class="num">02</span>
+      <div><h3>High-performance computing</h3><p>Leading C-HUK, a training programme on HPC machines under the National Supercomputing Mission.</p></div>
+    </li>
+    <li>
+      <span class="num">03</span>
+      <div><h3>AI and computer vision</h3><p>Object detection research on drone imagery with SSD, Faster R-CNN, YOLO v3 and YOLO v4, using TensorFlow, Darknet and Keras.</p></div>
+    </li>
+    <li>
+      <span class="num">04</span>
+      <div><h3>Training and programme delivery</h3><p>Curriculum design, coordination and hands-on teaching for postgraduate AI programmes and for cybersecurity and blockchain courses.</p></div>
+    </li>
+  </ul>
+</section>
+
+<section class="sheet dark" id="experience">
+  <h2 class="display">Experience</h2>
+  <div class="jobs inner">
+    <article class="job">
+      <div class="job-head">
+        <div><h3>Project Engineer</h3><p class="org">Centre for Development of Advanced Computing (C-DAC), Guwahati</p></div>
+        <span class="date">May 2022 to present</span>
+      </div>
+      <ul>
+        <li>Built backend modules for the ACTS E-Learning and Internship application with Spring Boot, REST APIs, PostgreSQL and Hibernate/JPA.</li>
+        <li>Added JWT authentication, role-based access, API integrations, database optimisations and asynchronous processing, covered by JUnit and Mockito tests.</li>
+        <li>Led the C-HUK project, which runs training programmes on high-performance computing machines.</li>
+        <li>Managed and delivered C-DAC's flagship postgraduate programme in artificial intelligence.</li>
+      </ul>
+    </article>
+    <article class="job">
+      <div class="job-head">
+        <div><h3>Software Programmer</h3><p class="org">National Institute of Electronics and Information Technology (NIELIT), Guwahati</p></div>
+        <span class="date">Mar 2021 to Apr 2022</span>
+      </div>
+      <ul>
+        <li>Managed projects including FutureSkills Prime Cybersecurity under NIELIT initiatives.</li>
+        <li>Ran skill development programmes in artificial intelligence, cybersecurity and blockchain.</li>
+      </ul>
+    </article>
+    <article class="job">
+      <div class="job-head">
+        <div><h3>Research Intern</h3><p class="org">North Eastern Space Applications Centre (NESAC), Meghalaya</p></div>
+        <span class="date">Jan 2020 to Aug 2020</span>
+      </div>
+      <ul>
+        <li>Prepared object detection models for aerial image and video feeds.</li>
+        <li>Compared the models' results to find the best fit for drone imagery.</li>
+      </ul>
+    </article>
+  </div>
+</section>
+
+<section class="creds" id="credentials" aria-label="Credentials">
+  <div class="stage">
+    <p class="creds-centre" id="credsCentre">Credentials</p>
+    <p class="creds-title" id="credsTitle" aria-hidden="true"></p>
+    <article class="cred" data-title="Scaler Backend Project Certification">
+      <span class="kind">Certificate</span>
+      <span class="name">Scaler Backend Project Certification</span>
+      <span class="meta"><span>Scaler, Mar 2026 to present</span><a href="https://tinyurl.com/4sy3k4en">Open certificate</a></span>
+    </article>
+    <article class="cred" data-title="Application Development in Python">
+      <span class="kind">Certificate</span>
+      <span class="name">Application Development in Python</span>
+      <span class="meta"><span>Course certificate</span><a href="https://tinyurl.com/38rzckcp">Open certificate</a></span>
+    </article>
+    <article class="cred" data-title="Docker for Java Applications">
+      <span class="kind">Certificate</span>
+      <span class="name">Docker for Java Applications</span>
+      <span class="meta"><span>Course certificate</span><a href="https://tinyurl.com/492rmde3">Open certificate</a></span>
+    </article>
+    <article class="cred" data-title="Master of Computer Applications">
+      <span class="kind">Degree</span>
+      <span class="name">Master of Computer Applications</span>
+      <span class="meta"><span>University of Science and Technology, Meghalaya</span><span>2017 to 2020</span></span>
+    </article>
+    <article class="cred" data-title="Bachelor of Information Technology">
+      <span class="kind">Degree</span>
+      <span class="name">Bachelor of Information Technology</span>
+      <span class="meta"><span>Gauhati University</span><span>2014 to 2017</span></span>
+    </article>
+    <ul class="creds-index" id="credsIndex" aria-hidden="true"></ul>
+  </div>
+</section>
+
+<section class="work" id="work">
+  <h2 class="display">Selected work</h2>
+  <div class="stack">
+    <article class="card" style="--i:0">
+      <div class="card-head">
+        <div><h3>ACTS E-Learning</h3><p class="cat">Backend / C-DAC, Jun 2024 to present</p></div>
+      </div>
+      <p class="desc">Backend for C-DAC's e-learning and internship platform, with secure APIs for multi-user academic workflows and faster responses through efficient queries and pagination.</p>
+      <ul class="tags"><li>Spring Boot</li><li>REST APIs</li><li>PostgreSQL</li><li>Hibernate/JPA</li><li>JWT</li><li>JUnit</li><li>Mockito</li></ul>
+    </article>
+    <article class="card" style="--i:1">
+      <div class="card-head">
+        <div><h3>C-HUK</h3><p class="cat">HPC / National Supercomputing Mission, Jan 2023 to present</p></div>
+      </div>
+      <p class="desc">I lead this project, which delivers advanced programmes on high-performance computing machines to build capacity and technical skill.</p>
+      <ul class="tags"><li>HPC</li><li>Training</li><li>Project leadership</li></ul>
+    </article>
+    <article class="card" style="--i:2">
+      <div class="card-head">
+        <div><h3>PG programme in AI</h3><p class="cat">Teaching / C-DAC ACTS, Oct 2022 to present</p></div>
+      </div>
+      <p class="desc">Managing and delivering the postgraduate programme in artificial intelligence, including curriculum design, coordination and hands-on technical training.</p>
+      <ul class="tags"><li>Artificial intelligence</li><li>Curriculum design</li><li>Teaching</li></ul>
+    </article>
+    <article class="card" style="--i:3">
+      <div class="card-head">
+        <div><h3>Performance management</h3><p class="cat">HR software / May 2023 to Feb 2024</p></div>
+      </div>
+      <p class="desc">An in-house module for the organisation's HR software. Employees can be assigned multiple tasks and file APAR reports, with analytics dashboards summarising the results.</p>
+      <ul class="tags"><li>HRMIS</li><li>Dashboards</li></ul>
+    </article>
+    <article class="card" style="--i:4">
+      <div class="card-head">
+        <div><h3>E-Waste management</h3><p class="cat">Web application / May 2023 to Mar 2024</p></div>
+        <a class="ghost" href="https://github.com/scraponics">View on GitHub</a>
+      </div>
+      <p class="desc">An end-to-end web application that tracks electronic waste from collection until it is dismantled and recycled.</p>
+      <ul class="tags"><li>Web application</li><li>Tracking</li></ul>
+    </article>
+    <article class="card" style="--i:5">
+      <div class="card-head">
+        <div><h3>Drone object detection</h3><p class="cat">Research / NESAC, Jan 2020 to Aug 2020</p></div>
+        <a class="ghost" href="https://github.com/DynamicCodes/Comparative-analysis-of-Deep-Learning-Algorithm">View on GitHub</a>
+      </div>
+      <p class="desc">A comparative analysis of four deep learning algorithms (SSD, Faster R-CNN, YOLO v3 and YOLO v4) on the complexities of drone imagery.</p>
+      <ul class="tags"><li>TensorFlow</li><li>Darknet</li><li>Keras</li></ul>
+    </article>
+  </div>
+</section>
+
+<section class="sheet paper" id="education">
+  <h2 class="display on-paper">Education and skills</h2>
+  <div class="inner">
+    <div class="edu-grid">
+      <div class="tile"><h3>Master of Computer Applications</h3><p>University of Science and Technology, Meghalaya, 2017 to 2020</p></div>
+      <div class="tile"><h3>Bachelor of Information Technology</h3><p>Gauhati University, 2014 to 2017</p></div>
+    </div>
+    <ul class="skills" aria-label="Skills">
+      <li>Java</li><li>Spring Boot</li><li>REST APIs</li><li>Kafka</li><li>Docker</li><li>Microservices</li><li>PostgreSQL</li><li>MongoDB</li><li>Hibernate/JPA</li><li>React</li><li>TensorFlow</li><li>OpenCV</li><li>Git</li><li>HPC</li>
+    </ul>
+  </div>
+</section>
+
+<section class="sheet dark contact" id="contact">
+  <h2 class="display">Let's build something solid</h2>
+  <p>Have a backend to build, a team to train, or a problem worth solving? Let's connect.</p>
+  <a class="pill" href="mailto:david053ray@gmail.com">Email me</a>
+  <p class="address">david053ray@gmail.com</p>
+  <div class="social">
+    <a class="ghost" href="https://www.linkedin.com/in/david-ray-4212b1184/">LinkedIn</a>
+    <a class="ghost" href="https://github.com/DynamicCodes">GitHub</a>
+  </div>
+  <p class="footline">David Ray, Guwahati, India</p>
+</section>
+
+<aside class="toast" id="toast" aria-live="polite">
+  <button type="button" id="toastClose" aria-label="Close this message">&times;</button>
+  <p>You've read this far, so the work must be relevant. Let's talk.</p>
+  <a class="ghost" href="#contact" id="toastGo">Contact me</a>
+</aside>
+
+<script>
+(function () {
+  var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var clamp = function (v, a, b) { return Math.min(b, Math.max(a, v)); };
+  var lerp = function (a, b, t) { return a + (b - a) * t; };
+  var ease = function (t) { return t * t * (3 - 2 * t); };
+  function progress(el) {
+    var total = el.offsetHeight - innerHeight;
+    return total > 0 ? clamp(-el.getBoundingClientRect().top / total, 0, 1) : 0;
+  }
+
+  /* Marquee rows: drift on their own and speed along with the scroll */
+  var rows = [
+    ['Backend', 'Spring Boot', 'REST APIs', 'PostgreSQL', 'Microservices'],
+    ['HPC', 'Artificial Intelligence', 'Cybersecurity', 'Training', 'Research']
+  ];
+  var tracks = [].slice.call(document.querySelectorAll('.track'));
+  tracks.forEach(function (t, i) {
+    var set = rows[i].map(function (w) { return '<span>' + w + ' •</span>'; }).join('');
+    t.innerHTML = set + set + set + set;
+  });
+
+  /* About: split the paragraph into words */
+  var about = document.getElementById('about');
+  var aboutText = document.getElementById('aboutText');
+  aboutText.innerHTML = aboutText.textContent.trim().split(/\s+/).map(function (w) { return '<span>' + w + '</span>'; }).join(' ');
+  var words = [].slice.call(aboutText.querySelectorAll('span'));
+
+  /* Credentials */
+  var creds = document.getElementById('credentials');
+  var stage = creds.querySelector('.stage');
+  var cards = [].slice.call(creds.querySelectorAll('.cred'));
+  var centre = document.getElementById('credsCentre');
+  var title = document.getElementById('credsTitle');
+  var index = document.getElementById('credsIndex');
+  var N = cards.length;
+  index.innerHTML = cards.map(function (c) { return '<li>' + c.dataset.title + '</li>'; }).join('');
+  var indexItems = [].slice.call(index.children);
+  var lastCur = -1;
+
+  function frame(now) {
+    var y = scrollY;
+
+    tracks.forEach(function (t) {
+      var w = t.scrollWidth / 4;
+      var dir = Number(t.dataset.dir);
+      var off = ((reduce ? 0 : now * 0.03) + y * 0.5) % w;
+      t.style.transform = 'translateX(' + (dir < 0 ? -off : off - w) + 'px)';
+    });
+
+    var lit = Math.round(clamp(progress(about) * 1.35, 0, 1) * words.length);
+    words.forEach(function (s, i) { s.classList.toggle('lit', i < lit); });
+
+    var p = progress(creds), a = 0.16, b = 0.84;
+    var m = p < a ? ease(p / a) : p > b ? ease((1 - p) / (1 - b)) : 1;
+    var f = clamp((p - a) / (b - a), 0, 1) * (N - 1);
+    var cur = Math.round(f);
+    var small = stage.clientWidth < 760;
+    var R = Math.min(stage.clientWidth, stage.clientHeight) * (small ? 0.34 : 0.36);
+    var ringScale = small ? 0.42 : 0.5;
+    var gap = cards[0].offsetHeight * 1.18;
+    cards.forEach(function (c, i) {
+      var ang = (i / N) * Math.PI * 2 - Math.PI / 2 + p * Math.PI * 1.1;
+      var rot = ((ang * 180 / Math.PI + 90) % 360 + 540) % 360 - 180;
+      var d = i - f, ad = Math.min(Math.abs(d), 1);
+      var x = lerp(Math.cos(ang) * R, 0, m);
+      var yy = lerp(Math.sin(ang) * R, d * gap, m);
+      var s = lerp(ringScale, 1 - ad * 0.14, m);
+      var tilt = clamp(d, -1, 1) * -22 * m;
+      c.style.transform = 'translate(-50%,-50%) translate(' + x.toFixed(1) + 'px,' + yy.toFixed(1) + 'px) rotate(' + (rot * (1 - m)).toFixed(2) + 'deg) rotateX(' + tilt.toFixed(2) + 'deg) scale(' + s.toFixed(3) + ')';
+      c.style.opacity = lerp(1, Math.abs(d) > 1.5 ? 0 : 1 - ad * 0.5, m).toFixed(3);
+      c.style.zIndex = i === cur ? 3 : 1;
+      c.style.pointerEvents = (m > 0.9 && i === cur) ? 'auto' : 'none';
+    });
+    centre.style.opacity = (1 - m).toFixed(3);
+    title.style.opacity = m.toFixed(3);
+    if (cur !== lastCur) {
+      title.textContent = cards[cur].dataset.title;
+      indexItems.forEach(function (li, i) { li.classList.toggle('on', i === cur); });
+      lastCur = cur;
+    }
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+
+  /* Toast */
+  var toast = document.getElementById('toast');
+  var hide = function () { toast.classList.remove('show'); };
+  setTimeout(function () { toast.classList.add('show'); }, 20000);
+  document.getElementById('toastClose').addEventListener('click', hide);
+  document.getElementById('toastGo').addEventListener('click', hide);
+})();
+</script>
+</body>
+</html>
